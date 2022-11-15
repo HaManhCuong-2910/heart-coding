@@ -4,8 +4,66 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Heart for VAN HA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
     <style>
+        body{
+            overflow: hidden;
+        }
+
+        #title {
+            position: absolute;
+            display: none;
+            color: #fff;
+            z-index: 1;
+            top: 16%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Dancing Script', cursive;
+            letter-spacing: 4px;
+            font-size: 38px;
+            font-weight: 500;
+            /* animation: animateText linear 3s both; */
+        }
+        #title span{
+            display: inline-block;
+            animation: moveIntroLoad ease 1.5s both;
+            animation-delay: calc(1200ms * var(--word-index));
+        }
+
+        @keyframes moveIntroLoad{
+            0%{
+                opacity: 0;
+                transform: translateX(50px);
+                color: hsla(0,92%,50%,1);
+            }
+            50%{
+                opacity: 1;
+                transform: translateX(0);
+                color: hsla(0,92%,50%,1);
+            }
+            100%{
+                opacity: 1;
+                transform: translateX(0);
+                color: hsla(0,92%,90%,1);
+                text-shadow: 2px 2px 14px;
+            }
+        }
+
+        @keyframes animateText {
+            0%{
+                opacity: 0;
+                color: hsla(0,92%,50%,1);
+
+            }
+            100%{
+                opacity: 1;
+                color: hsla(0,92%,90%,1);
+            }
+        }
+    
         canvas {
             position: absolute;
             left: 0;
@@ -14,12 +72,84 @@
             height: 100%;
             background-color: rgba(0, 0, 0, .2);
         }
+
+        .heart-onmouse{
+            position: absolute;
+            pointer-events: none;
+            animation: fadeInOut 1s linear infinite;
+            filter: drop-shadow(0 0 15px rgba(0,0,0,0.5)); 
+        }
+
+        @keyframes fadeInOut{
+            0%,100%{
+                opacity: 0;
+            }
+            20%,80%{
+                opacity: 1;
+            }
+        }
+        .heart-onmouse::before{
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: url('./heart.png');
+            background-size: cover;
+            animation: moveShape 1s linear infinite;
+        }
+
+        @keyframes moveShape{
+            0%{
+                transform: translate(0) rotate(0deg);
+            }
+            100%{
+                transform: translate(300px) rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
+    <h2 id="title">I LOVE VAN HA</h2>
     <canvas id="heart"></canvas>
 
     <script>
+        let counter = 0;
+        function incrementCounter() {
+            counter++;
+            let arrIntroTitle = $('#title').text().trim().split(' ');
+            let introChange = '';
+            arrIntroTitle.map((text, index) => {
+                introChange += '<span style="--word-index:' + (index + 1) + ';">' + text + '</span>' + '\n';
+            })
+            $('#title').html(introChange);
+            $('#title').css('display', 'block');
+        }
+        incrementCounter();
+
+        document.addEventListener('mousemove', function (e) {
+            let body = document.querySelector('body');
+            let heart = document.createElement('span');
+            heart.className = 'heart-onmouse';
+            let x = e.offsetX;
+            let y = e.offsetY;
+
+            heart.style.left = x + 'px';
+            heart.style.top = y + 'px';
+
+            let size = Math.random() * 80;
+
+            heart.style.width = 10 + size + 'px';
+            heart.style.height = 10 + size + 'px';
+
+            let transformValue = Math.random * 360;
+            heart.style.transform = 'roate(' + transformValue + 'deg)';
+
+            body.appendChild(heart);
+            setTimeout(function () {
+                heart.remove();
+            }, 1000)
+        })
+
         window.requestAnimationFrame =
             window.__requestAnimationFrame ||
             window.requestAnimationFrame ||
@@ -77,6 +207,7 @@
             for (i = 0; i < Math.PI * 2; i += dr) pointsOrigin.push(scaleAndTranslate(heartPosition(i), 150, 9, 0, 0));
             for (i = 0; i < Math.PI * 2; i += dr) pointsOrigin.push(scaleAndTranslate(heartPosition(i), 90, 5, 0, 0));
             var heartPointsCount = pointsOrigin.length;
+            console.log(pointsOrigin);
 
             var targetPoints = [];
             var pulse = function (kx, ky) {
@@ -104,6 +235,7 @@
                 };
                 for (var k = 0; k < traceCount; k++) e[i].trace[k] = { x: x, y: y };
             }
+            console.log(e);
 
             var config = {
                 traceK: 0.4,
